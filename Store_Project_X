@@ -1,3 +1,8 @@
-User Input: None
+User Input: write a code to multiplay two numbers in python
 Generated Code:
-Your generated code here
+
+
+a=2
+b=5
+
+print(a*b)
