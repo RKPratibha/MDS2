@@ -5,14 +5,14 @@ from tkinter import messagebox
 import requests
 import os
 #OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 # GitHub credentials
-github_username = "Piyush-Project-X"
-github_token = "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"
-repository_name = "New_Project_X"
-file_path = "New_Project_X/Store_Project_X" 
+github_username = "RKPratibha"
+github_token = "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"
+repository_name = "MDS2"
+file_path = "Store_Project_X" 
 class Kernel:
     def __init__(self):
         self.user_input = None
@@ -46,22 +46,23 @@ class Kernel:
             return None, "No code to execute."
 
 # Function to push data to GitHub
-def push_to_github(user_input, generated_code):
-    github_api_url = f"https://github.com/Piyush-Project-X/New_Project_X.git"
+def push_to_github(user_input, generated_code,github_token,github_username,repository_name, file_path):
+    #github_api_url = f"https://github.com/RKPratibha/MDS2.git"
+    github_api_url = f"https://api.github.com/repos/RKPratibha/MDS2/contents/Store_Project_X?ref=main"
     commit_message = f"Update generated information for: {user_input}"
 
+    headers = {
+          "Accept": "application/vnd.github+json",
+          "Authorization": f"Bearer {github_token}",
+          "X-GitHub-Api-Version": "2022-11-28"
+        
+        }
     try:
-        response = requests.get(github_api_url, headers={"Authorization": f"token {github_token}"})
-
-        if response.status_code == 200:
-            print("Successfully pushed to GitHub.")
-        else:
-            print(f"GitHub Push Error - Status Code: {response.status_code}")
-            print("Response Content:")
-            print(response.text)
-
+        # Retrieve current file details
+        response = requests.get(github_api_url, headers=headers)
         response.raise_for_status()
-        current_content = response.json()["content"]
+        current_content = response.json().get("content", "")
+        current_sha = response.json().get("sha", "")
 
         # Encode the new content (user_input + generated_code) to base64
         import base64
@@ -70,18 +71,42 @@ def push_to_github(user_input, generated_code):
         # If the content has changed, update the file on GitHub
         if new_content != current_content:
             data = {
-                "message": commit_message,
+                "message": f"Update generated information for: {user_input}",
                 "content": new_content,
-                "sha": response.json()["sha"]
+                "sha": current_sha
             }
-            response = requests.put(github_api_url, json=data, headers={"Authorization": f"token {github_token}"})
+
+            # Make the PUT request to update the file
+            response = requests.put(github_api_url, json=data, headers=headers)
             response.raise_for_status()
+
+            print("Successfully pushed to GitHub.")
             return True
         else:
+            print("Content has not changed. No update needed.")
             return False
+
     except Exception as e:
         print(f"GitHub Push Error: {str(e)}")
         return False
+
+# Usage
+user_input = os.environ.get("USER_INPUT")
+generated_code = "Your generated code here"
+github_username = "RKPratibha"
+github_token = "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"
+repository_name = "MDS2"
+file_path = "Store_Project_X" 
+
+# Call the function to push to GitHub
+push_result = push_to_github(user_input, generated_code,github_token, github_username, repository_name, file_path)
+
+if push_result:
+    print("Generated information pushed to GitHub successfully!")
+else:
+    print("Failed to push to GitHub.")
+    
+ 
 
 # Class for the GUI
 class GUI:
@@ -126,7 +151,12 @@ class GUI:
         user_input = self.user_input_entry.get()
         generated_code = self.kernel.generated_code
         if user_input and generated_code:
-            github_push_result = push_to_github(user_input, generated_code)
+            # GitHub credentials
+            github_username = "RKPratibha"
+            #github_token = "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"
+            github_token = "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"
+            
+            github_push_result = push_to_github(user_input, generated_code,github_token, github_username,repository_name, file_path)
             if github_push_result:
                 messagebox.showinfo("GitHub Push", "Generated information pushed to GitHub successfully!")
             else:
