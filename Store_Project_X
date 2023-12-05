@@ -1,12 +1,5 @@
-User Input: Write a code to add  two numbers in python
+User Input: what is the weather in florida today?
 Generated Code:
 
 
-num1 = 1.5
-num2 = 6.3
-
-# Add two numbers
-sum = float(num1) + float(num2)
-
-# Display the sum
-print('The sum of {0} and {1} is {2}'.format(num1, num2, sum))
+The weather in Florida today is mostly sunny with a high of 75 degrees Fahrenheit.
