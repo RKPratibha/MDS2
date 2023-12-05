@@ -1,3 +1,8 @@
-User Input: None
+User Input: write a code to add two numbers in python
 Generated Code:
-Your generated code here
+
+
+a = 1
+b = 2
+
+print(a+b)
